@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#090b14" id="theme-color-meta" />
+    <title>Convo Kicker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=17" />
+  </head>
+  <body data-theme="lovers">
+    <div class="page-shell">
+      <main class="app-frame">
+        <section class="card-stack" id="card-stack" aria-label="Conversation prompt deck">
+          <article class="question-card return-card" id="card-prev" aria-hidden="true">
+            <span class="card-quote card-quote-open" aria-hidden="true">&ldquo;</span>
+            <div class="card-copy">
+              <h2 class="card-text">Preview</h2>
+            </div>
+            <span class="card-quote card-quote-close" aria-hidden="true">&rdquo;</span>
+            <span class="card-counter"></span>
+          </article>
+
+          <article class="question-card preview-card preview-card-far" id="card-three" aria-hidden="true">
+            <span class="card-quote card-quote-open" aria-hidden="true">&ldquo;</span>
+            <div class="card-copy">
+              <h2 class="card-text">Preview</h2>
+            </div>
+            <span class="card-quote card-quote-close" aria-hidden="true">&rdquo;</span>
+            <span class="card-counter"></span>
+          </article>
+
+          <article class="question-card preview-card preview-card-near" id="card-two" aria-hidden="true">
+            <span class="card-quote card-quote-open" aria-hidden="true">&ldquo;</span>
+            <div class="card-copy">
+              <h2 class="card-text">Preview</h2>
+            </div>
+            <span class="card-quote card-quote-close" aria-hidden="true">&rdquo;</span>
+            <span class="card-counter"></span>
+          </article>
+
+          <article class="question-card active-card" id="card-one" aria-live="polite" aria-atomic="true">
+            <span class="card-quote card-quote-open" aria-hidden="true">&ldquo;</span>
+            <div class="card-copy">
+              <h2 class="card-text">Question Here</h2>
+            </div>
+            <span class="card-quote card-quote-close" aria-hidden="true">&rdquo;</span>
+            <span class="card-counter"></span>
+          </article>
+        </section>
+      </main>
+
+      <button class="footer-bar" id="settings-trigger" type="button" aria-label="Open settings">
+        <span id="category-label">Lovers</span>
+        <span class="footer-separator" aria-hidden="true">•</span>
+        <span id="mood-label">Playful</span>
+        <span class="footer-separator" aria-hidden="true">•</span>
+        <span id="language-label">English</span>
+        <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M19.14 12.94a7.43 7.43 0 0 0 .05-.94 7.43 7.43 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.15 7.15 0 0 0-1.63-.94l-.36-2.54a.49.49 0 0 0-.49-.42h-3.84a.49.49 0 0 0-.49.42l-.36 2.54c-.58.23-1.12.54-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.43 7.43 0 0 0-.05.94 7.43 7.43 0 0 0 .05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.5.4 1.05.72 1.63.94l.36 2.54a.49.49 0 0 0 .49.42h3.84a.49.49 0 0 0 .49-.42l.36-2.54c.58-.23 1.13-.54 1.63-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64zm-7.14 2.56A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="test-badge" id="test-badge" aria-hidden="true" hidden>TEST</div>
+
+    <dialog class="settings-dialog" id="settings-dialog">
+      <form method="dialog" class="settings-panel">
+        <div class="settings-header">
+          <p class="settings-title">Customize Card</p>
+          <button class="icon-button settings-close" value="cancel" aria-label="Close settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.3 5.71 12 12l6.3 6.29-1.41 1.41L10.59 13.4 4.29 19.7 2.88 18.29 9.17 12 2.88 5.71 4.29 4.29l6.3 6.3 6.29-6.3z" />
+            </svg>
+          </button>
+        </div>
+
+        <section class="settings-group" aria-labelledby="type-label">
+          <span id="type-label">Type</span>
+          <div class="chip-row" role="group" aria-labelledby="type-label">
+            <button class="chip is-active" type="button" data-setting="category" data-value="lovers">Lovers</button>
+            <button class="chip" type="button" data-setting="category" data-value="friends">Friends</button>
+          </div>
+        </section>
+
+        <section class="settings-group" aria-labelledby="mood-label-settings">
+          <span id="mood-label-settings">Mood</span>
+          <div class="chip-row" role="group" aria-labelledby="mood-label-settings">
+            <button class="chip is-active" type="button" data-setting="mood" data-value="playful">Playful</button>
+            <button class="chip" type="button" data-setting="mood" data-value="deep">Serious / Deep</button>
+          </div>
+        </section>
+
+        <section class="settings-group" aria-labelledby="language-label-settings">
+          <span id="language-label-settings">Language</span>
+          <div class="chip-grid" role="group" aria-labelledby="language-label-settings">
+            <button class="chip is-active" type="button" data-setting="language" data-value="english">English</button>
+            <button class="chip" type="button" data-setting="language" data-value="indonesian">Bahasa</button>
+            <button class="chip" type="button" data-setting="language" data-value="chinese">中文</button>
+            <button class="chip" type="button" data-setting="language" data-value="japanese">日本語</button>
+            <button class="chip" type="button" data-setting="language" data-value="korean">한국어</button>
+          </div>
+        </section>
+
+        <button class="settings-save" id="settings-save" type="button">Save</button>
+      </form>
+    </dialog>
+
+    <script src="./tracker.js?v=2"></script>
+    <script src="./script.js?v=18"></script>
+  </body>
+</html>

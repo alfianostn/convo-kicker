@@ -1,0 +1,392 @@
+:root {
+  --bg-top: #090b14;
+  --bg-bottom: #111521;
+  --glow: rgba(255, 95, 150, 0.16);
+  --active-1: #c73c71;
+  --active-2: #842d54;
+  --active-ink: #fff7fb;
+  --preview-ink: rgba(255, 247, 251, 0.9);
+  --footer-ink: rgba(255, 232, 241, 0.74);
+  --panel-bg: rgba(248, 246, 252, 0.98);
+  --panel-ink: #1a1030;
+  --panel-muted: rgba(26, 16, 48, 0.52);
+  --line: rgba(255, 255, 255, 0.08);
+  --shadow: 0 40px 100px rgba(0, 0, 0, 0.44);
+  --shadow-soft: 0 24px 64px rgba(0, 0, 0, 0.24);
+}
+
+body[data-theme="friends"] {
+  --glow: rgba(92, 160, 255, 0.18);
+  --active-1: #3a77d9;
+  --active-2: #214783;
+  --active-ink: #f7fbff;
+  --preview-ink: rgba(247, 251, 255, 0.9);
+  --footer-ink: rgba(229, 240, 255, 0.74);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  /* Paints the canvas behind the safe-area insets on iOS (status bar, home indicator).
+     Without this, the canvas stays white even with viewport-fit=cover. */
+  background: #090b14;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  color: var(--footer-ink);
+  background:
+    radial-gradient(circle at 20% 10%, var(--glow), transparent 28%),
+    radial-gradient(circle at 82% 0%, rgba(255, 255, 255, 0.04), transparent 18%),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+}
+
+button {
+  font: inherit;
+}
+
+.page-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: max(24px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 26px;
+}
+
+.app-frame {
+  display: grid;
+  place-items: center;
+}
+
+.card-stack {
+  position: relative;
+  width: min(100%, 340px);
+  max-width: 340px;
+  height: min(80dvh, 476px);
+  min-height: 340px;
+  aspect-ratio: 5 / 7;
+  touch-action: pan-y;
+}
+
+.question-card {
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  contain: layout style;
+}
+
+.question-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -18% auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 72%);
+  pointer-events: none;
+}
+
+.active-card {
+  z-index: 2;
+  background: linear-gradient(160deg, var(--active-1), var(--active-2));
+  color: var(--active-ink);
+  box-shadow: var(--shadow);
+  transform: translate3d(0, 0, 0) rotate(0deg);
+  cursor: grab;
+}
+
+.active-card.dragging {
+  cursor: grabbing;
+}
+
+.preview-card {
+  background: linear-gradient(160deg, var(--active-1), var(--active-2));
+  color: var(--active-ink);
+  box-shadow: var(--shadow-soft);
+}
+
+.return-card {
+  z-index: 3;
+  background: linear-gradient(160deg, var(--active-1), var(--active-2));
+  color: var(--active-ink);
+  box-shadow: var(--shadow);
+  transform: translate3d(-110vw, 0, 0) rotate(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.preview-card-near {
+  z-index: 1;
+  transform: translate3d(0, 18px, 0) scale(0.965);
+}
+
+.preview-card-far {
+  z-index: 0;
+  transform: translate3d(0, 34px, 0) scale(0.93);
+}
+
+.card-copy {
+  height: 100%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 40px 30px;
+}
+
+.card-quote {
+  position: absolute;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 7rem;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-quote-open {
+  top: 12px;
+  left: 24px;
+}
+
+.card-quote-close {
+  bottom: 14px;
+  right: 24px;
+}
+
+.card-counter {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  text-align: left;
+  padding-left: 28px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-text {
+  margin: 0;
+  font-size: clamp(1.4rem, 5.2vw, 2.2rem);
+  line-height: 1.28;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+
+
+.footer-bar {
+  width: min(100%, 460px);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--footer-ink);
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
+.footer-bar .footer-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.footer-separator {
+  font-size: 1.08rem;
+}
+
+.icon-button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.icon-button svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.settings-dialog {
+  border: 0;
+  padding: 0;
+  width: min(92vw, 430px);
+  border-radius: 28px;
+  background: transparent;
+}
+
+.settings-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px);
+}
+
+.settings-panel {
+  padding: 18px;
+  background: var(--panel-bg);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.settings-title {
+  margin: 0;
+  color: var(--panel-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.settings-group {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.settings-group span {
+  color: var(--panel-muted);
+  font-size: 0.92rem;
+}
+
+.chip-row,
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--panel-muted);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+
+.chip.is-active {
+  border-color: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.09);
+  color: var(--panel-ink);
+}
+
+.settings-save {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--active-1), var(--active-2));
+  color: var(--active-ink);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.settings-dialog .icon-button {
+  color: var(--panel-muted);
+}
+
+/* Suppress focus ring on mouse/touch; keep it for keyboard nav */
+button:focus:not(:focus-visible) { outline: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-bar:hover,
+  .chip:hover {
+    opacity: 0.84;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    padding: 16px 14px 18px;
+  }
+
+  .card-stack {
+    min-height: 300px;
+    height: min(74dvh, 440px);
+  }
+
+  .question-card {
+    border-radius: 30px;
+  }
+
+  .card-copy {
+    padding: 34px 24px;
+  }
+
+  .card-text {
+    font-size: clamp(1.3rem, 6vw, 2rem);
+  }
+
+  .footer-bar {
+    font-size: 0.98rem;
+  }
+}
+
+/* ── Test mode badge ────────────────────────────────────────── */
+
+.test-badge {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 9999;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 200, 0, 0.85);
+  color: #1a1a1a;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
