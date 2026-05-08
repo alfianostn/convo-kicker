@@ -713,6 +713,7 @@ function dragFrame() {
 
   // Active card follows finger exactly — no transition
   elActive.style.transform = `translate3d(${dx}px,0,0) rotate(${rot}deg)`;
+  elActive.style.setProperty('--holo-angle', `${200 + (dx / window.innerWidth) * 30}deg`);
 
   if (dx < 0) {
     // Dragging LEFT → next card rises from behind

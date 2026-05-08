@@ -76,11 +76,9 @@ button {
 
 .card-stack {
   position: relative;
-  width: min(100%, 340px);
+  width: min(100%, 340px, calc(85dvh / 1.6));
   max-width: 340px;
-  height: min(80dvh, 476px);
-  min-height: 340px;
-  aspect-ratio: 5 / 7;
+  aspect-ratio: 1 / 1.6;
   touch-action: pan-y;
 }
 
@@ -95,6 +93,22 @@ button {
   -webkit-backface-visibility: hidden;
   transform-style: preserve-3d;
   contain: layout style;
+}
+
+.question-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--holo-angle, 200deg) at 60% 40%,
+    #ff6ec7, #ffe566, #6bffb8, #5cb8ff, #c77dff, #ff6ec7
+  );
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 30%, black 75%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 30%, black 75%);
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .question-card::after {
@@ -313,9 +327,9 @@ button {
 }
 
 .chip.is-active {
-  border-color: rgba(0, 0, 0, 0.2);
-  background: rgba(0, 0, 0, 0.09);
-  color: var(--panel-ink);
+  border: none;
+  background: var(--active-1);
+  color: var(--active-ink);
 }
 
 .settings-save {
@@ -323,7 +337,7 @@ button {
   padding: 14px;
   border: 0;
   border-radius: 16px;
-  background: linear-gradient(160deg, var(--active-1), var(--active-2));
+  background: var(--active-1);
   color: var(--active-ink);
   font-size: 1rem;
   font-weight: 600;
@@ -351,8 +365,7 @@ button:focus:not(:focus-visible) { outline: none; }
   }
 
   .card-stack {
-    min-height: 300px;
-    height: min(74dvh, 440px);
+    width: min(100%, 300px, calc(80dvh / 1.6));
   }
 
   .question-card {
