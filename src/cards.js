@@ -7,10 +7,27 @@ export function setCounter(el, idx, total) {
 }
 
 export function restoreAllToRest() {
-  elActive.style.cssText = "";
-  elNear.style.cssText   = "";
-  elFar.style.cssText    = "";
-  elPrev.style.cssText   = "";
+  // Set transition:none before transforms so no animation fires on reset
+  elActive.style.transition = "none";
+  elNear.style.transition   = "none";
+  elFar.style.transition    = "none";
+  elPrev.style.transition   = "none";
+
+  elActive.style.transform  = "translate3d(0,0,0) rotate(0deg)";
+  elNear.style.transform    = "translate3d(0,18px,0) scale(0.965) rotate(5deg)";
+  elFar.style.transform     = "translate3d(0,34px,0) scale(0.93) rotate(-5deg)";
+  elPrev.style.transform    = "translate3d(-110vw,0,0) rotate(-18deg)";
+
+  elActive.style.opacity    = "1";
+  elNear.style.opacity      = "1";
+  elFar.style.opacity       = "1";
+  elPrev.style.opacity      = "0";
+  elPrev.style.zIndex       = "";
+
+  elActive.style.boxShadow  = "";
+  elNear.style.boxShadow    = "";
+  elFar.style.boxShadow     = "";
+  elPrev.style.boxShadow    = "";
 
   elActive.className = "question-card active-card";
   elNear.className   = "question-card preview-card preview-card-near";
@@ -62,28 +79,24 @@ export function playIntro() {
   // before any transition is applied (prevents jump-to-end)
   void elActive.offsetHeight;
 
-  // Far card drifts up first (back of the stack)
   setTimeout(() => {
     elFar.style.transition = ease(640);
-    elFar.style.transform  = "translate3d(0,34px,0) scale(0.93)";
+    elFar.style.transform  = "translate3d(0,34px,0) scale(0.93) rotate(-5deg)";
     elFar.style.opacity    = "1";
   }, 80);
 
-  // Near card follows close behind
   setTimeout(() => {
     elNear.style.transition = ease(660);
-    elNear.style.transform  = "translate3d(0,18px,0) scale(0.965)";
+    elNear.style.transform  = "translate3d(0,18px,0) scale(0.965) rotate(5deg)";
     elNear.style.opacity    = "1";
   }, 260);
 
-  // Active card lands on top with the strongest spring
   setTimeout(() => {
     elActive.style.transition = ease(720);
     elActive.style.transform  = "translate3d(0,0,0) rotate(0deg)";
     elActive.style.opacity    = "1";
   }, 450);
 
-  // Hand back control once the active card has finished
   setTimeout(() => {
     restoreAllToRest();
     S.busy = false;

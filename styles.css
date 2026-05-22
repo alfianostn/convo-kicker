@@ -153,12 +153,12 @@ button {
 
 .preview-card-near {
   z-index: 1;
-  transform: translate3d(0, 18px, 0) scale(0.965);
+  transform: translate3d(0, 18px, 0) scale(0.965) rotate(5deg);
 }
 
 .preview-card-far {
   z-index: 0;
-  transform: translate3d(0, 34px, 0) scale(0.93);
+  transform: translate3d(0, 34px, 0) scale(0.93) rotate(-5deg);
 }
 
 .card-copy {
