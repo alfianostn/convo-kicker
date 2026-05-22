@@ -1,5 +1,5 @@
-import { S, wrapIdx, SWIPE_MS, SWIPE_NEXT_MS, SNAP_MS, DISSOLVE_MS, makeTr, applyStyle } from './state.js';
-import { render, restoreAllToRest } from './cards.js';
+import { S, wrapIdx, getDeck, setTxt, SWIPE_MS, SWIPE_NEXT_MS, SNAP_MS, DISSOLVE_MS, EASING, makeTr, applyStyle } from './state.js';
+import { render, restoreAllToRest, setCounter } from './cards.js';
 import { cardStack, elActive, elNear, elFar, elPrev } from './dom.js';
 
 /* ── Swipe forward (← left) ──────────────────────────────────── */
@@ -13,23 +13,38 @@ export function goNext() {
   if (S.busy) return;
   S.busy = true;
 
+  // Load card 4 into elPrev (unused during goNext) and start it sliding simultaneously.
+  // elPrev has z-index:3 from CSS but we override to 0 so it sits behind card 3 (elFar).
+  // DOM order: elPrev comes before elFar, so at the same z-index elFar paints on top. ✓
+  const deck = getDeck();
+  const card4Idx = wrapIdx(S.idx + 3);
+  setTxt(elPrev, deck[card4Idx]);
+  setCounter(elPrev, card4Idx, deck.length);
+  elPrev.style.transition = "none";
+  elPrev.style.zIndex     = "0";
+  elPrev.style.opacity    = "1";
+  elPrev.style.transform  = "translate3d(0,18px,0) scale(0.965) rotate(-5deg)";
+  // Commit the start position BEFORE applyStyle so the main animations still
+  // use their rest positions as the "before" value for their transitions.
+  void elPrev.offsetHeight;
+  elPrev.style.transition = `transform ${SWIPE_NEXT_MS}ms ${EASING}`;
+  elPrev.style.transform  = "translate3d(0,34px,0) scale(0.93) rotate(-5deg)";
+
   const T = makeTr(SWIPE_NEXT_MS);
-  applyStyle(elActive, "translate3d(-110vw,0,0) rotate(-18deg)", 0, T);
-  applyStyle(elNear,   "translate3d(0,0,0) scale(1)",            1, T);
-  applyStyle(elFar,    "translate3d(0,18px,0) scale(0.965)",     1, T);
+  applyStyle(elActive, "translate3d(-110vw,0,0) rotate(-18deg)",           0, T);
+  applyStyle(elNear,   "translate3d(0,0,0) scale(1) rotate(0deg)",         1, T);
+  applyStyle(elFar,    "translate3d(0,18px,0) scale(0.965) rotate(5deg)",  1, T);
+  // Shadow grows on elNear as it rises — by commit it already equals --shadow,
+  // so elActive appearing with the same shadow causes no sudden darkening.
+  elNear.style.transition = T + `, box-shadow ${SWIPE_NEXT_MS}ms ease`;
+  elNear.style.boxShadow  = "0 40px 100px rgba(0, 0, 0, 0.44)";
 
   const fromIdx = S.idx;
   setTimeout(() => {
     S.idx = wrapIdx(S.idx + 1);
     Tracker.swipeNext({ from: fromIdx, to: S.idx, method: S._lastInput || "keyboard" });
     Tracker.startCardTimer(S.idx);
-    render();
-    // Dissolve in the brand-new back card (was not visible before this swipe)
-    elFar.style.transition = "none";
-    elFar.style.opacity    = "0";
-    void elFar.offsetHeight;
-    elFar.style.transition = `opacity ${DISSOLVE_MS}ms ease`;
-    elFar.style.opacity    = "1";
+    render();  // restoreAllToRest clears inline box-shadow on all cards
     S.busy = false;
   }, SWIPE_NEXT_MS + 30);
 }
@@ -57,14 +72,14 @@ export function goPrev(fromDrag) {
   const T = makeTr(SWIPE_MS);
 
   // Prev slides back in from the left to center
-  applyStyle(elPrev, "translate3d(0,0,0) rotate(0deg)", 1, T);
+  applyStyle(elPrev, "translate3d(0,0,0) rotate(0deg)",                      1, T);
 
-  // Active recedes to near position (pushed back by returning card)
-  applyStyle(elActive, "translate3d(0,18px,0) scale(0.965)", 1, T);
+  // Active recedes to near position — animates to near tilt
+  applyStyle(elActive, "translate3d(0,18px,0) scale(0.965) rotate(5deg)",    1, T);
 
-  // Near recedes to far position
-  applyStyle(elNear, "translate3d(0,34px,0) scale(0.93)", 1, T);
-  applyStyle(elFar,  "translate3d(0,34px,0) scale(0.93)", 1, T);
+  // Near recedes to far position — animates to far tilt
+  applyStyle(elNear, "translate3d(0,34px,0) scale(0.93) rotate(-5deg)",      1, T);
+  applyStyle(elFar,  "translate3d(0,34px,0) scale(0.93) rotate(-5deg)",      1, T);
 
   const fromIdx = S.idx;
   setTimeout(() => {
@@ -80,10 +95,10 @@ export function goPrev(fromDrag) {
 
 export function snapBack() {
   const T = makeTr(SNAP_MS);
-  applyStyle(elActive, "translate3d(0,0,0) rotate(0deg)",        1, T);
-  applyStyle(elNear,   "translate3d(0,18px,0) scale(0.965)",     1, T);
-  applyStyle(elFar,    "translate3d(0,34px,0) scale(0.93)",      1, T);
-  applyStyle(elPrev,   "translate3d(-110vw,0,0) rotate(-18deg)", 0, T);
+  applyStyle(elActive, "translate3d(0,0,0) rotate(0deg)",                    1, T);
+  applyStyle(elNear,   "translate3d(0,18px,0) scale(0.965) rotate(5deg)",    1, T);
+  applyStyle(elFar,    "translate3d(0,34px,0) scale(0.93) rotate(-5deg)",    1, T);
+  applyStyle(elPrev,   "translate3d(-110vw,0,0) rotate(-18deg)",             0, T);
 
   setTimeout(restoreAllToRest, SNAP_MS + 30);
 }
@@ -96,34 +111,35 @@ function dragFrame() {
 
   const dx = S.nowX - S.startX;
   const p  = Math.min(Math.abs(dx) / 160, 1);
-  const rot = (dx / 20).toFixed(2);
+  const dragRot = (dx / 20).toFixed(2);
 
   // Active card follows finger exactly — no transition
-  elActive.style.transform = `translate3d(${dx}px,0,0) rotate(${rot}deg)`;
+  elActive.style.transform = `translate3d(${dx}px,0,0) rotate(${dragRot}deg)`;
   elActive.style.setProperty('--holo-angle', `${200 + (dx / window.innerWidth) * 30}deg`);
 
   if (dx < 0) {
-    // Dragging LEFT → next card rises from behind
-    elNear.style.transform = `translate3d(0,${(18 - p * 18).toFixed(1)}px,0) scale(${(0.965 + p * 0.035).toFixed(4)})`;
+    // Dragging LEFT → near: +5→0, far: -5→+5
+    const nearRot = (5  - p * 5).toFixed(2);
+    const farRot  = (-5 + p * 10).toFixed(2);
+    elNear.style.transform = `translate3d(0,${(18 - p * 18).toFixed(1)}px,0) scale(${(0.965 + p * 0.035).toFixed(4)}) rotate(${nearRot}deg)`;
     elNear.style.opacity   = "1";
-    elFar.style.transform  = `translate3d(0,${(34 - p * 16).toFixed(1)}px,0) scale(${(0.93 + p * 0.035).toFixed(4)})`;
+    elFar.style.transform  = `translate3d(0,${(34 - p * 16).toFixed(1)}px,0) scale(${(0.93 + p * 0.035).toFixed(4)}) rotate(${farRot}deg)`;
     elFar.style.opacity    = "1";
-    // Keep prev off-screen left
     elPrev.style.transform = "translate3d(-110vw,0,0) rotate(-18deg)";
     elPrev.style.opacity   = "0";
   } else {
-    // Dragging RIGHT → prev card returns from the left (inverse of discard)
-    const offscreen = window.innerWidth * 1.1;
-    const prevX = (-offscreen + p * offscreen).toFixed(1);
-    const prevRot = (-18 + p * 18).toFixed(2);
+    // Dragging RIGHT → active: 0→+5, near: +5→-5
+    const offscreen  = window.innerWidth * 1.1;
+    const prevX      = (-offscreen + p * offscreen).toFixed(1);
+    const prevRot    = (-18 + p * 18).toFixed(2);
+    const activeRot  = (p * 5).toFixed(2);
+    const nearRot    = (5 - p * 10).toFixed(2);
     elPrev.style.zIndex    = "3";
     elPrev.style.transform = `translate3d(${prevX}px,0,0) rotate(${prevRot}deg)`;
     elPrev.style.opacity   = p.toFixed(3);
-    // Near shifts down toward far position
-    elNear.style.transform = `translate3d(0,${(18 + p * 16).toFixed(1)}px,0) scale(${(0.965 - p * 0.035).toFixed(4)})`;
+    elNear.style.transform = `translate3d(0,${(18 + p * 16).toFixed(1)}px,0) scale(${(0.965 - p * 0.035).toFixed(4)}) rotate(${nearRot}deg)`;
     elNear.style.opacity   = "1";
-    // Far stays at rest
-    elFar.style.transform  = "translate3d(0,34px,0) scale(0.93)";
+    elFar.style.transform  = "translate3d(0,34px,0) scale(0.93) rotate(-5deg)";
     elFar.style.opacity    = "1";
   }
 }
