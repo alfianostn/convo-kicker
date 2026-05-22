@@ -51,8 +51,8 @@ export function render() {
 export function playIntro() {
   S.busy = true;
 
-  const SPRING = "cubic-bezier(0.34, 1.4, 0.64, 1)";
-  const ease   = (ms) => `transform ${ms}ms ${SPRING}, opacity ${ms}ms ease`;
+  const SPRING = "cubic-bezier(0.34, 1.08, 0.64, 1)";
+  const ease   = (ms) => `transform ${ms}ms ${SPRING}, opacity 120ms linear`;
 
   // Park all three visible cards below the stack (off-screen bottom)
   elFar.style.cssText    = "transition:none; transform:translate3d(0,80%,0) scale(0.93); opacity:0;";
@@ -64,28 +64,28 @@ export function playIntro() {
 
   // Far card drifts up first (back of the stack)
   setTimeout(() => {
-    elFar.style.transition = ease(520);
+    elFar.style.transition = ease(640);
     elFar.style.transform  = "translate3d(0,34px,0) scale(0.93)";
     elFar.style.opacity    = "1";
-  }, 60);
+  }, 80);
 
   // Near card follows close behind
   setTimeout(() => {
-    elNear.style.transition = ease(540);
+    elNear.style.transition = ease(660);
     elNear.style.transform  = "translate3d(0,18px,0) scale(0.965)";
     elNear.style.opacity    = "1";
-  }, 200);
+  }, 260);
 
   // Active card lands on top with the strongest spring
   setTimeout(() => {
-    elActive.style.transition = ease(580);
+    elActive.style.transition = ease(720);
     elActive.style.transform  = "translate3d(0,0,0) rotate(0deg)";
     elActive.style.opacity    = "1";
-  }, 340);
+  }, 450);
 
   // Hand back control once the active card has finished
   setTimeout(() => {
     restoreAllToRest();
     S.busy = false;
-  }, 1020);
+  }, 1300);
 }
