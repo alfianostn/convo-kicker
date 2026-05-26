@@ -6,10 +6,13 @@ import { chipButtons, settingsDialog, elSettingsTitle, elTypeLabel, elMoodLabelS
 // Pending state — holds unsaved selections while the modal is open
 const pending = { cat: S.cat, lang: S.lang, mood: S.mood };
 
+const CATEGORY_COLOR = { lovers: "#c73c71", friends: "#3a77d9" };
+
 function syncChipUI() {
   chipButtons.forEach(b => {
     b.classList.toggle("is-active", pending[KEY[b.dataset.setting]] === b.dataset.value);
   });
+  settingsDialog.style.setProperty("--active-1", CATEGORY_COLOR[pending.cat]);
 }
 
 function renderSettingsText(lang) {
@@ -26,6 +29,14 @@ function renderSettingsText(lang) {
   });
 }
 
+function closeWithAnimation() {
+  settingsDialog.classList.add("is-closing");
+  settingsDialog.addEventListener("animationend", () => {
+    settingsDialog.classList.remove("is-closing");
+    settingsDialog.close();
+  }, { once: true });
+}
+
 document.getElementById("settings-trigger").addEventListener("click", () => {
   // Reset pending to current state each time modal opens
   pending.cat  = S.cat;
@@ -35,6 +46,18 @@ document.getElementById("settings-trigger").addEventListener("click", () => {
   renderSettingsText(pending.lang);
   Tracker.settingsOpened();
   settingsDialog.showModal();
+});
+
+// Intercept X button (submits <form method="dialog"> which would close instantly)
+settingsDialog.querySelector("form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  closeWithAnimation();
+});
+
+// Intercept Escape key (fires "cancel" before closing)
+settingsDialog.addEventListener("cancel", (e) => {
+  e.preventDefault();
+  closeWithAnimation();
 });
 
 chipButtons.forEach(btn => {
@@ -54,5 +77,5 @@ document.getElementById("settings-save").addEventListener("click", () => {
   Tracker.settingsSaved({ category: S.cat, mood: S.mood, language: S.lang, changed });
   if (changed) Tracker.startCardTimer(S.idx);
   render();
-  settingsDialog.close();
+  closeWithAnimation();
 });
