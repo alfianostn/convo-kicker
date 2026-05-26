@@ -1,7 +1,31 @@
+@property --glow-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@property --glow-y {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 4%;
+}
+
+@property --glow2-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@property --glow2-y {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 96%;
+}
+
 :root {
   --bg-top: #090b14;
   --bg-bottom: #111521;
-  --glow: rgba(255, 95, 150, 0.16);
+  --glow: rgba(255, 95, 150, 0.22);
   --active-1: #c73c71;
   --active-2: #842d54;
   --active-ink: #fff7fb;
@@ -16,7 +40,7 @@
 }
 
 body[data-theme="friends"] {
-  --glow: rgba(92, 160, 255, 0.18);
+  --glow: rgba(92, 160, 255, 0.22);
   --active-1: #3a77d9;
   --active-2: #214783;
   --active-ink: #f7fbff;
@@ -51,9 +75,55 @@ body {
   font-family: "Open Sans", sans-serif;
   color: var(--footer-ink);
   background:
-    radial-gradient(circle at 20% 10%, var(--glow), transparent 28%),
+    radial-gradient(circle at var(--glow-x) var(--glow-y), var(--glow), transparent 32%),
+    radial-gradient(circle at var(--glow2-x) var(--glow2-y), var(--glow), transparent 28%),
     radial-gradient(circle at 82% 0%, rgba(255, 255, 255, 0.04), transparent 18%),
     linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  animation: glow-orbit 20s linear infinite, glow-orbit-ccw 20s linear infinite;
+}
+
+@keyframes glow-orbit {
+  0%     { --glow-x: 50.0%; --glow-y:  4.0%; }
+  6.25%  { --glow-x: 67.6%; --glow-y:  7.5%; }
+  12.5%  { --glow-x: 82.5%; --glow-y: 17.5%; }
+  18.75% { --glow-x: 92.5%; --glow-y: 32.4%; }
+  25%    { --glow-x: 96.0%; --glow-y: 50.0%; }
+  31.25% { --glow-x: 92.5%; --glow-y: 67.6%; }
+  37.5%  { --glow-x: 82.5%; --glow-y: 82.5%; }
+  43.75% { --glow-x: 67.6%; --glow-y: 92.5%; }
+  50%    { --glow-x: 50.0%; --glow-y: 96.0%; }
+  56.25% { --glow-x: 32.4%; --glow-y: 92.5%; }
+  62.5%  { --glow-x: 17.5%; --glow-y: 82.5%; }
+  68.75% { --glow-x:  7.5%; --glow-y: 67.6%; }
+  75%    { --glow-x:  4.0%; --glow-y: 50.0%; }
+  81.25% { --glow-x:  7.5%; --glow-y: 32.4%; }
+  87.5%  { --glow-x: 17.5%; --glow-y: 17.5%; }
+  93.75% { --glow-x: 32.4%; --glow-y:  7.5%; }
+  100%   { --glow-x: 50.0%; --glow-y:  4.0%; }
+}
+
+@keyframes glow-orbit-ccw {
+  0%     { --glow2-x: 50.0%; --glow2-y: 96.0%; }
+  6.25%  { --glow2-x: 32.4%; --glow2-y: 92.5%; }
+  12.5%  { --glow2-x: 17.5%; --glow2-y: 82.5%; }
+  18.75% { --glow2-x:  7.5%; --glow2-y: 67.6%; }
+  25%    { --glow2-x:  4.0%; --glow2-y: 50.0%; }
+  31.25% { --glow2-x:  7.5%; --glow2-y: 32.4%; }
+  37.5%  { --glow2-x: 17.5%; --glow2-y: 17.5%; }
+  43.75% { --glow2-x: 32.4%; --glow2-y:  7.5%; }
+  50%    { --glow2-x: 50.0%; --glow2-y:  4.0%; }
+  56.25% { --glow2-x: 67.6%; --glow2-y:  7.5%; }
+  62.5%  { --glow2-x: 82.5%; --glow2-y: 17.5%; }
+  68.75% { --glow2-x: 92.5%; --glow2-y: 32.4%; }
+  75%    { --glow2-x: 96.0%; --glow2-y: 50.0%; }
+  81.25% { --glow2-x: 92.5%; --glow2-y: 67.6%; }
+  87.5%  { --glow2-x: 82.5%; --glow2-y: 82.5%; }
+  93.75% { --glow2-x: 67.6%; --glow2-y: 92.5%; }
+  100%   { --glow2-x: 50.0%; --glow2-y: 96.0%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none; }
 }
 
 button {
@@ -85,6 +155,7 @@ button {
 .question-card {
   position: absolute;
   inset: 0;
+  opacity: 0;
   border-radius: 36px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
