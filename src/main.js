@@ -1,4 +1,4 @@
-import { S } from './state.js';
+import { S, reshuffleDeck } from './state.js';
 import { render, playIntro } from './cards.js';
 import './swipe.js';
 import './settings.js';
@@ -21,6 +21,11 @@ document.addEventListener("keydown", (e) => {
 
 /* ── Init ────────────────────────────────────────────────────── */
 
+const LANG_MAP = { en: 'english', id: 'indonesian', zh: 'chinese', ja: 'japanese', ko: 'korean' };
+const detected = LANG_MAP[navigator.language?.slice(0, 2).toLowerCase()];
+if (detected) S.lang = detected;
+
+reshuffleDeck();
 render();
 playIntro();
 Tracker.startCardTimer(S.idx);

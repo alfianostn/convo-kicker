@@ -20,11 +20,23 @@ export const S = {
   // interrupt support
   commitTimer: null,
   pendingFn:   null,
+  // shuffled deck for current lang/cat/mood
+  currentDeck: [],
 };
 
 export const KEY = { category: "cat", language: "lang", mood: "mood" };
 
-export function getDeck() { return decks[S.lang][S.cat][S.mood]; }
+export function reshuffleDeck() {
+  const src = decks[S.lang][S.cat][S.mood];
+  const arr = src.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  S.currentDeck = arr;
+}
+
+export function getDeck() { return S.currentDeck; }
 export function wrapIdx(i) { const d = getDeck(); return (i + d.length) % d.length; }
 export function setTxt(el, text) { el.querySelector(".card-text").textContent = text; }
 

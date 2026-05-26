@@ -1,5 +1,5 @@
 import labels from '../data/labels.js';
-import { S, KEY } from './state.js';
+import { S, KEY, reshuffleDeck } from './state.js';
 import { render } from './cards.js';
 import { chipButtons, settingsDialog, elSettingsTitle, elTypeLabel, elMoodLabelS, elLangLabelS, elSaveBtn } from './dom.js';
 
@@ -73,7 +73,7 @@ document.getElementById("settings-save").addEventListener("click", () => {
   S.cat  = pending.cat;
   S.lang = pending.lang;
   S.mood = pending.mood;
-  if (changed) S.idx = 0;
+  if (changed) { S.idx = 0; reshuffleDeck(); }
   Tracker.settingsSaved({ category: S.cat, mood: S.mood, language: S.lang, changed });
   if (changed) Tracker.startCardTimer(S.idx);
   render();
