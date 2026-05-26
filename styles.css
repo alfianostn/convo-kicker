@@ -188,6 +188,7 @@ button {
 .card-quote-close {
   bottom: 14px;
   right: 24px;
+  line-height: 0;
 }
 
 .card-counter {

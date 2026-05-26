@@ -2,6 +2,21 @@ import { S, wrapIdx, getDeck, setTxt, SWIPE_MS, SWIPE_NEXT_MS, SNAP_MS, DISSOLVE
 import { render, restoreAllToRest, setCounter } from './cards.js';
 import { cardStack, elActive, elNear, elFar, elPrev } from './dom.js';
 
+/* ── Interrupt: fast-forward in-flight animation ─────────────── */
+/*
+  Called before starting a new swipe. If a previous swipe is still animating,
+  cancel the timer, run the commit immediately (state + render), then proceed.
+  No-op when idle (no pendingFn / no commitTimer).
+*/
+function interrupt() {
+  if (S.commitTimer === null && S.pendingFn === null) return;
+  clearTimeout(S.commitTimer);
+  S.commitTimer = null;
+  S.pendingFn?.();
+  S.pendingFn = null;
+  S.busy = false;
+}
+
 /* ── Swipe forward (← left) ──────────────────────────────────── */
 /*
   Visually:  active flies out left, near rises to full, far rises to near.
@@ -10,7 +25,9 @@ import { cardStack, elActive, elNear, elFar, elPrev } from './dom.js';
              misfires on elements with pointer-events:none or opacity:0.
 */
 export function goNext() {
-  if (S.busy) return;
+  if (S.dragging) return;
+  interrupt();
+  if (S.busy) return;   // still busy = intro or other non-interruptible animation
   S.busy = true;
 
   // Load card 4 into elPrev (unused during goNext) and start it sliding simultaneously.
@@ -40,11 +57,18 @@ export function goNext() {
   elNear.style.boxShadow  = "0 40px 100px rgba(0, 0, 0, 0.44)";
 
   const fromIdx = S.idx;
-  setTimeout(() => {
-    S.idx = wrapIdx(S.idx + 1);
-    Tracker.swipeNext({ from: fromIdx, to: S.idx, method: S._lastInput || "keyboard" });
-    Tracker.startCardTimer(S.idx);
+  S.pendingFn = () => {
+    S.idx = wrapIdx(fromIdx + 1);
+    render();
+  };
+  S.commitTimer = setTimeout(() => {
+    const toIdx = wrapIdx(fromIdx + 1);
+    S.idx = toIdx;
+    Tracker.swipeNext({ from: fromIdx, to: toIdx, method: S._lastInput || "keyboard" });
+    Tracker.startCardTimer(toIdx);
     render();  // restoreAllToRest clears inline box-shadow on all cards
+    S.commitTimer = null;
+    S.pendingFn   = null;
     S.busy = false;
   }, SWIPE_NEXT_MS + 30);
 }
@@ -57,6 +81,8 @@ export function goNext() {
   This is the exact inverse of goNext — the card "comes back".
 */
 export function goPrev(fromDrag) {
+  if (S.dragging) return;
+  interrupt();
   if (S.busy) return;
   S.busy = true;
 
@@ -82,11 +108,18 @@ export function goPrev(fromDrag) {
   applyStyle(elFar,  "translate3d(0,34px,0) scale(0.93) rotate(-5deg)",      1, T);
 
   const fromIdx = S.idx;
-  setTimeout(() => {
-    S.idx = wrapIdx(S.idx - 1);
-    Tracker.swipePrev({ from: fromIdx, to: S.idx, method: S._lastInput || "keyboard" });
-    Tracker.startCardTimer(S.idx);
+  S.pendingFn = () => {
+    S.idx = wrapIdx(fromIdx - 1);
     render();
+  };
+  S.commitTimer = setTimeout(() => {
+    const toIdx = wrapIdx(fromIdx - 1);
+    S.idx = toIdx;
+    Tracker.swipePrev({ from: fromIdx, to: toIdx, method: S._lastInput || "keyboard" });
+    Tracker.startCardTimer(toIdx);
+    render();
+    S.commitTimer = null;
+    S.pendingFn   = null;
     S.busy = false;
   }, SWIPE_MS + 30);
 }

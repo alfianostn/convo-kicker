@@ -13,10 +13,13 @@ export const S = {
   idx:   0,
   busy:  false,   // true while a swipe animation is in progress
   // drag tracking
-  dragging: false,
-  startX:   0,
-  nowX:     0,
-  rafId:    null,
+  dragging:    false,
+  startX:      0,
+  nowX:        0,
+  rafId:       null,
+  // interrupt support
+  commitTimer: null,
+  pendingFn:   null,
 };
 
 export const KEY = { category: "cat", language: "lang", mood: "mood" };
