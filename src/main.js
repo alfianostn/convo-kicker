@@ -1,5 +1,6 @@
 import { S, reshuffleDeck } from './state.js';
 import { render, playIntro } from './cards.js';
+import { initOnboarding } from './onboarding.js';
 import './swipe.js';
 import './settings.js';
 
@@ -29,3 +30,4 @@ reshuffleDeck();
 render();
 playIntro();
 Tracker.startCardTimer(S.idx);
+initOnboarding(1500);
