@@ -23,7 +23,8 @@ export function initOnboarding(delayMs) {
     document.removeEventListener('pointerdown', dismiss);
 
     toast.classList.add('is-dismissing');
-    toast.addEventListener('animationend', () => {
+    toast.addEventListener('animationend', (e) => {
+      if (e.animationName !== 'toast-out') return;
       toast.hidden = true;
     }, { once: true });
     localStorage.setItem(SEEN_KEY, '1');
