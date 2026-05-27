@@ -17,7 +17,7 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=23" />
+    <link rel="stylesheet" href="./styles.css?v=24" />
   </head>
   <body data-theme="lovers">
     <div class="page-shell">
@@ -77,28 +77,9 @@
 
     <div class="test-badge" id="test-badge" aria-hidden="true" hidden>TEST</div>
 
-    <div class="onboarding-overlay" id="onboarding-overlay" hidden aria-label="How to navigate" role="dialog">
-      <div class="onboarding-card">
-        <div class="onboarding-hints">
-          <div class="onboarding-hint">
-            <svg class="onboarding-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            <span class="onboarding-action">Previous</span>
-          </div>
-          <div class="onboarding-divider"></div>
-          <div class="onboarding-hint">
-            <svg class="onboarding-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/></svg>
-            <span class="onboarding-action">Next</span>
-          </div>
-        </div>
-        <p class="onboarding-method">
-          <span class="for-touch">swipe left or right</span>
-          <span class="for-pointer">arrow keys or drag</span>
-        </p>
-        <p class="onboarding-dismiss">
-          <span class="for-touch">tap anywhere to start</span>
-          <span class="for-pointer">click or press any key to start</span>
-        </p>
-      </div>
+    <div class="nav-toast" id="onboarding-overlay" hidden aria-live="polite">
+      <span class="for-touch">Swipe left or right to navigate</span>
+      <span class="for-pointer">Drag or use ← → keys to navigate</span>
     </div>
 
     <dialog class="settings-dialog" id="settings-dialog">
@@ -144,6 +125,6 @@
     </dialog>
 
     <script src="./tracker.js?v=2"></script>
-    <script type="module" src="./src/main.js?v=4"></script>
+    <script type="module" src="./src/main.js?v=5"></script>
   </body>
 </html>
