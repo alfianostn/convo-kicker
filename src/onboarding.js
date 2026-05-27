@@ -9,7 +9,7 @@ export function initOnboarding(delayMs) {
   const showTimer = setTimeout(() => {
     toast.hidden = false;
     // Auto-dismiss after 4s, or on first interaction — whichever comes first
-    autoTimer = setTimeout(dismiss, 4000);
+    autoTimer = setTimeout(dismiss, 6000);
     document.addEventListener('keydown',    dismiss, { once: true });
     document.addEventListener('touchstart', dismiss, { once: true, passive: true });
     document.addEventListener('pointerdown', dismiss, { once: true });
