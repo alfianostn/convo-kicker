@@ -6,7 +6,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import decks from "./data/decks-en.js";
 
-const SITE = "https://convo-kicker.netlify.app";
+const SITE = "https://convokicker.netlify.app";
 
 const PAGES = [
   {

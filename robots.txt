@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://convo-kicker.netlify.app/sitemap.xml
+Sitemap: https://convokicker.netlify.app/sitemap.xml
